@@ -9,7 +9,7 @@
 ## Notes-enUS: Record instance reset time and provide a 1-hour countdown|N|CFFFFFFFF|R|CFF33FF33Call command: /bt|R
 ## X-Repple: 辅助
 ## Author: Shirley
-## Version: 1.4
+## Version: 1.5
 ## SavedVariables: BoomtimeDB
 
 Boomtime.lua

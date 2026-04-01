@@ -1,12 +1,10 @@
-
 -- ===== 多语言支持框架 =====
 local L = {
     zhCN = {
-        TITLE = "副本CD监控",
-        LABEL = "副本次数%d",
+        LABEL = "副本%d",
         READY = "可用",
-        RESET_BUTTON = "重置副本",
-        REPORT_BUTTON = "队伍通报",
+        RESET_BUTTON = "重置",
+        REPORT_BUTTON = "通报",
         TIME_FORMAT = "%02d:%02d",
         RESET_PATTERNS = {"已被重置"},
         RESET_ANNOUNCE = "副本已重置，请进入副本！",
@@ -15,12 +13,13 @@ local L = {
         FRAME_UNLOCK = "框架已解锁",
         FRAME_LOCK_LOCAL = "锁定框架位置",
         FRAME_UNLOCK_LOCAL = "解锁框架位置",
-        COMMAND_USAGE = "命令用法:"
+        COMMAND_USAGE = "命令用法:",
+        FRAME_SHOW = "框架已显示",
+        FRAME_HIDE = "框架已隐藏"
     },
     enUS = {
-        TITLE = "BoomTime",
         LABEL = "CD %d",
-        READY = "Ready!",
+        READY = "Ready",
         RESET_BUTTON = "Reset",
         REPORT_BUTTON = "Notice",
         TIME_FORMAT = "%02d:%02d",
@@ -31,10 +30,12 @@ local L = {
         FRAME_UNLOCK = "The framework has been unlocked.",
         FRAME_LOCK_LOCAL = "Lock the frame position.",
         FRAME_UNLOCK_LOCAL = "Unlock frame position.",
-        COMMAND_USAGE = "Command Usage:"
+        COMMAND_USAGE = "Command Usage:",
+        FRAME_SHOW = "Frame shown",
+        FRAME_HIDE = "Frame hidden"
     }
-	
-	-- 可在此添加其他客户端语言拓展：zhTW, koKR, deDE, frFR.
+    
+    -- ```Add other client language extensions here```：zhTW, koKR, deDE, frFR.
 }
 
 -- 自动检测客户端语言
@@ -73,8 +74,8 @@ end
 
 -- ===== 创建主框架 =====
 local frame = CreateFrame("Frame", "BoomtimeFrame", UIParent)
-frame:SetWidth(170)
-frame:SetHeight(realmData.height)
+frame:SetWidth(130)
+frame:SetHeight(180)
 frame:SetBackdrop({
     bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -85,27 +86,39 @@ frame:SetBackdropColor(0, 0, 0, 0.8)
 frame:SetFrameStrata("DIALOG")
 frame:SetToplevel(true)
 
--- ===== 关键修复：统一坐标系转换 =====
+-- ===== 统一坐标系转换 =====
 local function GetFramePosition()
     return frame:GetLeft(), UIParent:GetTop() - frame:GetTop()
 end
 
--- ===== 关键修复：位置刷新函数 =====
+-- ===== 位置刷新函数 =====
 local function RefreshFramePosition()
     frame:ClearAllPoints()
     frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", realmData.left, -realmData.top)
 end
 
--- ===== 关键修复：位置保存优化 =====
+-- ===== 位置保存优化 =====
 frame:SetScript("OnDragStop", function()
     if not realmData.isLocked then
         this:StopMovingOrSizing()
-        -- 关键修复：统一使用坐标系转换函数
+        -- 统一使用坐标系转换函数
         realmData.left, realmData.top = GetFramePosition()
         realmData.height = this:GetHeight()
     end
 end)
 
+-- ===== 显示/隐藏UI框架的函数 =====
+local function ShowUIFrame()
+    frame:Show()
+    realmData.isVisible = true
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99Boomtime|r: "..L[locale].FRAME_SHOW)
+end
+
+local function HideUIFrame()
+    frame:Hide()
+    realmData.isVisible = false
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99Boomtime|r: "..L[locale].FRAME_HIDE)
+end
 
 -- ===== 框架锁定功能修复 =====
 local function ToggleFrameLock(isLocked)
@@ -126,18 +139,23 @@ local function ToggleFrameLock(isLocked)
     end
 end
 
-
 -- ===== 命令处理器 =====
 local function HandleCommand(msg)
     if msg == "lock" then
         ToggleFrameLock(true)
     elseif msg == "unlock" then
         ToggleFrameLock(false)
+    elseif msg == "show" then
+        ShowUIFrame()
+    elseif msg == "hide" then
+        HideUIFrame()
     else
         -- 显示帮助信息
         DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99Boomtime|r "..L[locale].COMMAND_USAGE)
         DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt lock|r - "..L[locale].FRAME_LOCK_LOCAL)
         DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt unlock|r - "..L[locale].FRAME_UNLOCK_LOCAL)
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt show|r - 显示Boomtime界面")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt hide|r - 关闭Boomtime界面")
     end
 end
 
@@ -163,16 +181,16 @@ frame:SetScript("OnDragStop", function()
 end)
 
 -- ===== 创建标题文本 =====
-local titleText = frame:CreateFontString(nil, "OVERLAY")
-titleText:SetFontObject(GameFontNormalLarge)
-titleText:SetPoint("TOP", frame, "TOP", 0, -10)
-titleText:SetText(L[locale].TITLE)
+--local titleText = frame:CreateFontString(nil, "OVERLAY")
+--titleText:SetFontObject(GameFontNormalLarge)
+--titleText:SetPoint("TOP", frame, "TOP", 0, -10)
+--titleText:SetText(L[locale].TITLE)
 
 -- ===== 创建5个标签和倒计时文本 =====
 local labelTexts = {}
 local timeTexts = {}
 
-local contentStartY = -45
+local contentStartY = -15
 for i = 1, 5 do
     local label = frame:CreateFontString(nil, "OVERLAY")
     label:SetFontObject(GameFontNormal)
@@ -191,11 +209,11 @@ end
 local buttonContainer = CreateFrame("Frame", nil, frame)
 buttonContainer:SetWidth(160)
 buttonContainer:SetHeight(30)
-buttonContainer:SetPoint("BOTTOM", frame, "BOTTOM", 0, 10)
+buttonContainer:SetPoint("BOTTOM", frame, "BOTTOM", 20, 10)
 
 -- ===== 队伍通报按钮 =====
 local reportBtn = CreateFrame("Button", nil, buttonContainer, "OptionsButtonTemplate")
-reportBtn:SetWidth(80)
+reportBtn:SetWidth(60)
 reportBtn:SetHeight(25)
 reportBtn:SetPoint("LEFT", buttonContainer, "LEFT", 0, 0)
 reportBtn:SetText(L[locale].REPORT_BUTTON)
@@ -223,7 +241,7 @@ end)
 
 -- ===== 重置按钮 =====
 local resetBtn = CreateFrame("Button", nil, buttonContainer, "OptionsButtonTemplate")
-resetBtn:SetWidth(80)
+resetBtn:SetWidth(60)
 resetBtn:SetHeight(25)
 resetBtn:SetPoint("LEFT", reportBtn, "RIGHT", 0, 0)
 resetBtn:SetText(L[locale].RESET_BUTTON)
@@ -303,7 +321,8 @@ frame:SetScript("OnUpdate", function()
         timer = 0
     end
 end)
--- ===== 初始化修复（关键修复） =====
+
+-- ===== 初始化 =====
 local initFrame = CreateFrame("Frame")
 initFrame:RegisterEvent("ADDON_LOADED")
 initFrame:SetScript("OnEvent", function()
@@ -325,18 +344,18 @@ initFrame:SetScript("OnEvent", function()
         if not realmData.lastResets then realmData.lastResets = {} end
         if realmData.isVisible == nil then realmData.isVisible = true end
         
-        -- 关键修复：位置刷新
+        -- 位置刷新
         RefreshFramePosition()
         
         -- 应用当前语言设置
-        titleText:SetText(L[locale].TITLE)
+        -- 移除标题设置：titleText:SetText(L[locale].TITLE)
         for i = 1, 5 do
             labelTexts[i]:SetText(format(L[locale].LABEL, i))
         end
         resetBtn:SetText(L[locale].RESET_BUTTON)
         reportBtn:SetText(L[locale].REPORT_BUTTON)
         
-        -- 强制显示框架
+        -- 根据保存的状态显示或隐藏框架
         if realmData.isVisible then
             frame:Show()
         else
@@ -350,13 +369,12 @@ initFrame:SetScript("OnEvent", function()
     end
 end)
 
-
--- ===== 框架拖动修复 =====
+-- ===== 框架拖动 =====
 frame:SetScript("OnDragStop", function()
     if not realmData.isLocked then
         this:StopMovingOrSizing()
         
-        -- 关键修复：正确获取坐标
+        -- 正确获取坐标
         local left = this:GetLeft()
         local top = UIParent:GetTop() - this:GetTop()
         
@@ -365,4 +383,3 @@ frame:SetScript("OnDragStop", function()
         realmData.height = this:GetHeight()
     end
 end)
-
