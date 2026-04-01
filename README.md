@@ -5,7 +5,8 @@
 #### 使用命令：
 #### /bt lock - 锁定界面
 #### /bt unlock - 解锁界面
-
+#### /bt show - 显示框架
+#### /bt hide - 关闭框架
 
 # Boomtime-TurtleWoW (English translation)
 #### 1. After each reset of the instance, a one hour countdown will automatically occur. After resetting five times within one hour, you will not be able to enter the instance for the sixth time. You can check the remaining time recorded by the plugin for the first time, which is the remaining time you can enter the instance for the next time
@@ -14,3 +15,5 @@
 #### Use command:
 #### /bt lock - Lock interface
 #### /bt unlock - Unlock interface
+#### /bt show - Display framework
+#### /bt hide - Close the framework
