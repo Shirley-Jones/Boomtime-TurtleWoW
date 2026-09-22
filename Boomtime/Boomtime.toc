@@ -1,15 +1,15 @@
 ## Interface: 11200
 ## Title: |CFF33AAFF[Assistance]|R|cff1fff1f Boomtime Instance available timer|R
-## Notes: Record instance reset time and provide a 1-hour countdown|N|CFFFFFFFF|R|CFF33FF33Call command: /bt|R
+## Notes: Record instance reset time and provide a 1-hour countdown|N|CFFFFFFFF|R|CFF33FF33Call command: /bt|N|CFFFFFFFF|R|cFFFF69B4 by Shirley TurtleWoW Special edition|R
 ## Title-zhCN:|CFF33AAFF[辅助]|R|cff1fff1f Boomtime 副本爆本计时器|R
-## Notes-zhCN: 记录副本重置时间并提供1小时倒计时|N|CFFFFFFFF|R|CFF33FF33调用命令: /bt|R
+## Notes-zhCN: 记录副本重置时间并提供1小时倒计时|N|CFFFFFFFF|R|CFF33FF33调用命令: /bt|N|CFFFFFFFF|R|cFFFF69B4 by Shirley 乌龟服定制版|R
 ## Title-zhTW:|CFF33AAFF[輔助]|R|cff1fff1f Boomtime 副本爆本計時器|R
-## Notes-zhTW: 記錄副本重置時間並提供1小時倒數計時|N|CFFFFFFFF|R|CFF33FF33調用命令: /bt|R
+## Notes-zhTW: 記錄副本重置時間並提供1小時倒數計時|N|CFFFFFFFF|R|CFF33FF33調用命令: /bt|N|CFFFFFFFF|R|cFFFF69B4 by Shirley TurtleWoW定製版|R
 ## Title-enUS:|CFF33AAFF[Assistance]|R|cff1fff1f Boomtime Instance available timer|R
 ## Notes-enUS: Record instance reset time and provide a 1-hour countdown|N|CFFFFFFFF|R|CFF33FF33Call command: /bt|R
 ## X-Repple: 辅助
 ## Author: Shirley
-## Version: 1.5
+## Version: 1.6
 ## SavedVariables: BoomtimeDB
 
 Boomtime.lua

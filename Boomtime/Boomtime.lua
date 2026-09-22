@@ -15,7 +15,10 @@ local L = {
         FRAME_UNLOCK_LOCAL = "解锁框架位置",
         COMMAND_USAGE = "命令用法:",
         FRAME_SHOW = "框架已显示",
-        FRAME_HIDE = "框架已隐藏"
+        FRAME_HIDE = "框架已隐藏",
+		UI_SHOW = "显示框架",
+        UI_HIDE = "隐藏框架",
+		FRAME_RESET_POSITION = "重置框架位置"
     },
     enUS = {
         LABEL = "CD %d",
@@ -32,7 +35,8 @@ local L = {
         FRAME_UNLOCK_LOCAL = "Unlock frame position.",
         COMMAND_USAGE = "Command Usage:",
         FRAME_SHOW = "Frame shown",
-        FRAME_HIDE = "Frame hidden"
+        FRAME_HIDE = "Frame hidden",
+		FRAME_RESET_POSITION = "Reset the frame position"
     }
     
     -- ```Add other client language extensions here```：zhTW, koKR, deDE, frFR.
@@ -120,7 +124,7 @@ local function HideUIFrame()
     DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99Boomtime|r: "..L[locale].FRAME_HIDE)
 end
 
--- ===== 框架锁定功能修复 =====
+-- ===== 框架锁定功能 =====
 local function ToggleFrameLock(isLocked)
     realmData.isLocked = isLocked
     
@@ -139,6 +143,27 @@ local function ToggleFrameLock(isLocked)
     end
 end
 
+-- ===== 将框架重置到屏幕中心 =====
+local function ResetFramePosition()
+	ToggleFrameLock(false)
+    local uiWidth  = UIParent:GetWidth()
+    local uiHeight = UIParent:GetHeight()
+    local frameWidth  = frame:GetWidth()
+    local frameHeight = frame:GetHeight()
+    if not frameWidth  or frameWidth  == 0 then frameWidth  = 130 end
+    if not frameHeight or frameHeight == 0 then frameHeight = 180 end
+
+    -- 中心位置（TOPLEFT 锚点）
+    local centerLeft = (uiWidth  - frameWidth)  / 2
+    local centerTop  = (uiHeight - frameHeight) / 2
+
+    realmData.left = centerLeft
+    realmData.top  = centerTop
+
+    RefreshFramePosition()
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99Boomtime|r: "..L[locale].FRAME_RESET_POSITION)
+end
+
 -- ===== 命令处理器 =====
 local function HandleCommand(msg)
     if msg == "lock" then
@@ -149,13 +174,16 @@ local function HandleCommand(msg)
         ShowUIFrame()
     elseif msg == "hide" then
         HideUIFrame()
+    elseif msg == "reset" then
+        ResetFramePosition()
     else
         -- 显示帮助信息
         DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99Boomtime|r "..L[locale].COMMAND_USAGE)
         DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt lock|r - "..L[locale].FRAME_LOCK_LOCAL)
         DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt unlock|r - "..L[locale].FRAME_UNLOCK_LOCAL)
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt show|r - 显示Boomtime界面")
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt hide|r - 关闭Boomtime界面")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt show|r - "..L[locale].UI_SHOW)
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt hide|r - "..L[locale].UI_HIDE)
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF33FF99/bt reset|r - "..L[locale].FRAME_RESET_POSITION)
     end
 end
 
